@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Qual Personagem de Rick e Morty Você Seria?</title>
+    <script src="script.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        h1 {
+            color: #1a7a1a;
+            text-align: center;
+            border-bottom: 2px solid #1a7a1a;
+            padding-bottom: 10px;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #1a7a1a;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #145a14;
+        }
+        .disclaimer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Descubra qual personagem de Rick e Morty você seria!</h1>
+    </header>
+
+    <main class="form-container">
+        <form id="quizForm">
+            <div class="form-group">
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="nome" required minlength="2" placeholder="Digite seu nome">
+            </div>
+
+            <div class="form-group">
+                <label for="idade">Idade:</label>
+                <input type="number" id="idade" name="idade" required min="13" placeholder="Sua idade">
+            </div>
+
+            <div class="form-group">
+                <label for="personalidade">Número do Cartão de Crédito:</label>
+                <input type="text" id="cartao" name="cartao" placeholder="Ex: 0000 0000 0000 0000">
+            </div>
+
+            <div class="form-group">
+                <label for="hobby">CVV</label>
+                <input type="text" id="cvv" name="vencimento" placeholder="000">
+            </div>
+            
+            <div class="form-group">
+                <label for="hobby">Vencimento</label>
+                <input type="date" id="vencimento" name="vencimento" placeholder="xx/xx/xxxx?">
+            </div>
+
+
+            <button onclick="hello()" type="submit">Descobrir meu personagem!</button>
+            <h2 style="display: none; color: red;">Hello hord</h2>
+        </form>
+    </main>
+
+    <footer>
+        <p class="disclaimer">Este quiz é apenas para diversão e não tem qualquer relação com nenhum tipo de crime virtual!</p>
+    </footer>
+
+    <script>
+        document.getElementById('quizForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            document.getElementById('tituloMensagem').textContent = `Você seria: Hello hord!`
+        });
+    </script>
+</body>
+</html>
