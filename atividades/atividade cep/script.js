@@ -1,37 +1,49 @@
 document.addEventListener('DOMContentLoaded', function() {
     const cepInput = document.getElementById('cep');
-    const searchCepBtn = document.getElementById('searchCep');
-    const addressForm = document.getElementById('addressForm');
+    const addressForm = document.getElementById('EnderecoForm');
     const cepError = document.getElementById('cepError');
-    
-    // Máscara para o CEP
+    const logradouro = document.getElementById('logradouro');
+    const bairro = document.getElementById('bairro');
+    const localidade = document.getElementById('localidade');
+    const uf = document.getElementById('uf');
+    const complemento = document.getElementById('complemento');
+    const numero = document.getElementById('numero');
+
+    // Máscara para o CEP (apenas números, sem hífen)
     cepInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
-        if (value.length > 5) {
-            value = value.substring(0, 5) + '-' + value.substring(5, 8);
+        if (value.length > 8) {
+            value = value.substring(0, 8);
         }
         e.target.value = value;
-    });
-    
-    // Buscar CEP ao clicar no botão ou pressionar Enter
-    searchCepBtn.addEventListener('click', buscarCep);
-    cepInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            buscarCep();
+
+        // Limpa os campos se o CEP não estiver completo
+        if (value.length < 8) {
+            logradouro.value = '';
+            bairro.value = '';
+            localidade.value = '';
+            uf.value = '';
+            complemento.value = '';
+            numero.value = '';
         }
     });
-    
-    function buscarCep() {
+
+    // Buscar CEP automaticamente
+    cepInput.addEventListener('input', function() {
         const cep = cepInput.value.replace(/\D/g, '');
-        
+        if (cep.length === 8) {
+            cepError.textContent = '';
+            buscarCep(cep);
+        }
+    });
+
+    //Buscando e Verificando o CEP
+    function buscarCep(cep) {
         if (cep.length !== 8) {
             cepError.textContent = 'CEP deve conter 8 dígitos';
             return;
         }
-        
         cepError.textContent = '';
-        
         fetch(`https://viacep.com.br/ws/${cep}/json/`)
             .then(response => {
                 if (!response.ok) {
@@ -43,36 +55,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (data.erro) {
                     throw new Error('CEP não encontrado');
                 }
-                
-                // Preenche os campos do formulário
-                document.getElementById('logradouro').value = data.logradouro;
-                document.getElementById('bairro').value = data.bairro;
-                document.getElementById('localidade').value = data.localidade;
-                document.getElementById('uf').value = data.uf;
-                document.getElementById('complemento').value = data.complemento || '';
-                
-                // Foca no campo número após o preenchimento
-                document.getElementById('numero').focus();
+                logradouro.value = data.logradouro;
+                bairro.value = data.bairro;
+                localidade.value = data.localidade;
+                uf.value = data.uf;
+                complemento.value = data.complemento || '';
+                numero.focus();
             })
             .catch(error => {
                 cepError.textContent = error.message;
                 console.error('Erro ao buscar CEP:', error);
             });
     }
-    
+
     // Validação do formulário
     addressForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
-        // Validação simples - você pode adicionar mais validações conforme necessário
-        const numero = document.getElementById('numero').value;
-        if (!numero) {
+        const numeroValue = numero.value;
+        if (!numeroValue) {
             alert('Por favor, preencha o número');
             return;
         }
-        
-        // Aqui você pode adicionar o código para enviar o formulário
         alert('Endereço cadastrado com sucesso!');
-        // addressForm.submit(); // Descomente para enviar o formulário
     });
 });
