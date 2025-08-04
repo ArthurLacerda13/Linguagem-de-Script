@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const complemento = document.getElementById('complemento');
     const numero = document.getElementById('numero');
 
-    // Máscara para o CEP (apenas números, sem hífen)
+    // Máscara para o CEP 
     cepInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
         if (value.length > 8) {
