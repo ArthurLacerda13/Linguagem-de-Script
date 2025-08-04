@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Personalidade - Descubra seu Arquétipo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .shape {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); }
+            100% { transform: translateY(-100vh) rotate(360deg); }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke-dasharray: 251.2;
+            stroke-dashoffset: 251.2;
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Formas flutuantes -->
+    <div class="floating-shapes">
+        <div class="shape w-20 h-20 bg-white rounded-full" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="shape w-16 h-16 bg-purple-300 rounded-lg" style="left: 20%; animation-delay: 5s;"></div>
+        <div class="shape w-12 h-12 bg-blue-300 rounded-full" style="left: 30%; animation-delay: 10s;"></div>
+        <div class="shape w-24 h-24 bg-indigo-300 rounded-lg" style="left: 40%; animation-delay: 15s;"></div>
+        <div class="shape w-14 h-14 bg-white rounded-full" style="left: 60%; animation-delay: 8s;"></div>
+        <div class="shape w-18 h-18 bg-purple-200 rounded-lg" style="left: 70%; animation-delay: 12s;"></div>
+        <div class="shape w-16 h-16 bg-blue-200 rounded-full" style="left: 80%; animation-delay: 3s;"></div>
+        <div class="shape w-20 h-20 bg-indigo-200 rounded-lg" style="left: 90%; animation-delay: 7s;"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8">
+        <!-- Tela Inicial -->
+        <div id="start-screen" class="min-h-screen flex flex-col items-center justify-center">
+            <div class="glass-effect rounded-3xl p-12 max-w-4xl text-center fade-in">
+                <h1 class="title-font text-5xl md:text-7xl font-bold text-white mb-4">
+                    Descubra Seu Arquétipo
+                </h1>
+                <h2 class="text-xl md:text-2xl text-purple-100 mb-8 font-light">
+                    Quiz de Personalidade Completo
+                </h2>
+                
+                <div class="bg-white/20 rounded-2xl p-8 mb-8">
+                    <p class="text-lg text-white leading-relaxed mb-6">
+                        🌟 Descubra qual arquétipo de personalidade define quem você é!
+                    </p>
+                    <p class="text-white/80 mb-4">
+                        ✨ Análise baseada em psicologia comportamental<br>
+                        📊 Resultado personalizado e detalhado<br>
+                        🎯 Insights sobre sua personalidade única
+                    </p>
+                </div>
+
+                <button onclick="showForm()" class="btn-primary text-white font-semibold py-4 px-12 rounded-2xl text-xl">
+                    Começar Análise Gratuita
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela do Formulário -->
+        <div id="form-screen" class="hidden min-h-screen flex flex-col justify-center py-12">
+            <div class="max-w-2xl mx-auto">
+                <div class="glass-effect rounded-3xl p-8 mb-8 slide-in">
+                    <h2 class="title-font text-3xl md:text-4xl font-bold text-white mb-6 text-center">
+                        Seus Dados Pessoais
+                    </h2>
+                    <p class="text-white/80 text-center mb-8">
+                        Para um resultado mais preciso, precisamos conhecer você melhor
+                    </p>
+
+                    <form id="user-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-medium mb-2">Nome Completo *</label>
+                                <input type="text" id="name" required class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" placeholder="Seu nome completo">
+                            </div>
+                            <div>
+                                <label class="block text-white font-medium mb-2">Email *</label>
+                                <input type="email" id="email" required class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" placeholder="seu@email.com">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-medium mb-2">Telefone/WhatsApp *</label>
+                                <input type="tel" id="phone" required class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" placeholder="(11) 99999-9999">
+                            </div>
+                            <div>
+                                <label class="block text-white font-medium mb-2">Idade</label>
+                                <select id="age" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none">
+                                    <option value="">Selecione sua idade</option>
+                                    <option value="16-25">16-25 anos</option>
+                                    <option value="26-35">26-35 anos</option>
+                                    <option value="36-45">36-45 anos</option>
+                                    <option value="46-55">46-55 anos</option>
+                                    <option value="56+">56+ anos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-white font-medium mb-2">Cidade</label>
+                                <input type="text" id="city" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" placeholder="Sua cidade">
+                            </div>
+                            <div>
+                                <label class="block text-white font-medium mb-2">Estado</label>
+                                <select id="state" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none">
+                                    <option value="">Selecione</option>
+                                    <option value="AC">Acre</option>
+                                    <option value="AL">Alagoas</option>
+                                    <option value="AP">Amapá</option>
+                                    <option value="AM">Amazonas</option>
+                                    <option value="BA">Bahia</option>
+                                    <option value="CE">Ceará</option>
+                                    <option value="DF">Distrito Federal</option>
+                                    <option value="ES">Espírito Santo</option>
+                                    <option value="GO">Goiás</option>
+                                    <option value="MA">Maranhão</option>
+                                    <option value="MT">Mato Grosso</option>
+                                    <option value="MS">Mato Grosso do Sul</option>
+                                    <option value="MG">Minas Gerais</option>
+                                    <option value="PA">Pará</option>
+                                    <option value="PB">Paraíba</option>
+                                    <option value="PR">Paraná</option>
+                                    <option value="PE">Pernambuco</option>
+                                    <option value="PI">Piauí</option>
+                                    <option value="RJ">Rio de Janeiro</option>
+                                    <option value="RN">Rio Grande do Norte</option>
+                                    <option value="RS">Rio Grande do Sul</option>
+                                    <option value="RO">Rondônia</option>
+                                    <option value="RR">Roraima</option>
+                                    <option value="SC">Santa Catarina</option>
+                                    <option value="SP">São Paulo</option>
+                                    <option value="SE">Sergipe</option>
+                                    <option value="TO">Tocantins</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-medium mb-2">Profissão/Área de Atuação</label>
+                            <input type="text" id="profession" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" placeholder="Sua profissão ou área de trabalho">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-medium mb-2">Como nos conheceu?</label>
+                            <select id="source" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none">
+                                <option value="">Selecione uma opção</option>
+                                <option value="google">Google/Pesquisa</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="instagram">Instagram</option>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="youtube">YouTube</option>
+                                <option value="indicacao">Indicação de amigo</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-start">
+                            <input type="checkbox" id="consent" required class="mt-1 mr-3">
+                            <label for="consent" class="text-white/90 text-sm">
+                                Aceito receber contato via email, WhatsApp e SMS com conteúdos sobre desenvolvimento pessoal e ofertas relacionadas. Posso cancelar a qualquer momento. *
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full text-white font-semibold py-4 rounded-2xl text-lg">
+                            Continuar para o Quiz
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela do Quiz -->
+        <div id="quiz-screen" class="hidden min-h-screen flex flex-col justify-center">
+            <div class="max-w-4xl mx-auto">
+                <!-- Barra de Progresso -->
+                <div class="glass-effect rounded-2xl p-6 mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-white font-semibold">Progresso</span>
+                        <span id="question-counter" class="text-purple-200 font-medium">1/10</span>
+                    </div>
+                    <div class="w-full bg-white/20 rounded-full h-3">
+                        <div id="progress-bar" class="bg-gradient-to-r from-purple-400 to-pink-400 h-3 rounded-full transition-all duration-500" style="width: 10%"></div>
+                    </div>
+                </div>
+
+                <!-- Card da Pergunta -->
+                <div class="glass-effect rounded-3xl p-8">
+                    <h3 id="question-text" class="title-font text-2xl md:text-3xl font-bold text-white mb-8 text-center"></h3>
+                    <div id="options-container" class="grid grid-cols-1 gap-4">
+                        <!-- As opções serão inseridas aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Resultado -->
+        <div id="result-screen" class="hidden min-h-screen flex flex-col items-center justify-center py-12">
+            <div class="glass-effect rounded-3xl p-12 max-w-4xl text-center fade-in">
+                <h2 class="title-font text-4xl md:text-6xl font-bold text-white mb-6">
+                    Seu Arquétipo é...
+                </h2>
+                
+                <div class="mb-8">
+                    <div id="character-icon" class="text-8xl mb-6"></div>
+                    <h3 id="character-name" class="title-font text-3xl md:text-5xl font-bold text-purple-200 mb-6"></h3>
+                    <p id="character-description" class="text-xl text-white leading-relaxed mb-8"></p>
+                    <div id="character-traits" class="flex flex-wrap justify-center gap-3 mb-8"></div>
+                </div>
+
+                <div class="bg-white/20 rounded-2xl p-6 mb-8">
+                    <p class="text-white font-medium mb-2">
+                        <span id="user-name-display"></span>, seu resultado personalizado foi enviado para:
+                    </p>
+                    <p class="text-purple-200" id="user-email-display"></p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="downloadResult()" class="btn-primary text-white font-semibold py-3 px-8 rounded-xl">
+                        📄 Baixar Relatório Completo
+                    </button>
+                    <button onclick="shareResult()" class="bg-white/20 hover:bg-white/30 text-white font-semibold py-3 px-8 rounded-xl border border-white/30 transition-all">
+                        📤 Compartilhar Resultado
+                    </button>
+                    <button onclick="restartQuiz()" class="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-xl border border-white/20 transition-all">
+                        🔄 Fazer Novamente
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Como você prefere passar seu tempo livre?",
+                options: [
+                    { text: "Liderando projetos e tomando decisões", value: "lider" },
+                    { text: "Criando, desenhando ou inventando algo novo", value: "criativo" },
+                    { text: "Ajudando outras pessoas e ouvindo seus problemas", value: "cuidador" },
+                    { text: "Explorando novos lugares e vivendo aventuras", value: "explorador" }
+                ]
+            },
+            {
+                question: "Qual é sua maior motivação na vida?",
+                options: [
+                    { text: "Alcançar o sucesso e ser reconhecido", value: "lider" },
+                    { text: "Expressar minha criatividade e originalidade", value: "criativo" },
+                    { text: "Fazer a diferença na vida das pessoas", value: "cuidador" },
+                    { text: "Viver experiências únicas e emocionantes", value: "explorador" }
+                ]
+            },
+            {
+                question: "Como você lida com desafios?",
+                options: [
+                    { text: "Assumo o controle e busco soluções práticas", value: "lider" },
+                    { text: "Penso fora da caixa e encontro alternativas criativas", value: "criativo" },
+                    { text: "Peço ajuda e trabalho em equipe", value: "cuidador" },
+                    { text: "Vejo como uma oportunidade de crescimento", value: "explorador" }
+                ]
+            },
+            {
+                question: "Qual ambiente você prefere?",
+                options: [
+                    { text: "Escritórios executivos e salas de reunião", value: "lider" },
+                    { text: "Ateliês, estúdios e espaços inspiradores", value: "criativo" },
+                    { text: "Hospitais, escolas e centros comunitários", value: "cuidador" },
+                    { text: "Ao ar livre, em viagens e lugares novos", value: "explorador" }
+                ]
+            },
+            {
+                question: "Como seus amigos te descrevem?",
+                options: [
+                    { text: "Determinado, ambicioso e confiante", value: "lider" },
+                    { text: "Original, imaginativo e inspirador", value: "criativo" },
+                    { text: "Gentil, compreensivo e confiável", value: "cuidador" },
+                    { text: "Corajoso, espontâneo e aventureiro", value: "explorador" }
+                ]
+            },
+            {
+                question: "Qual é seu maior medo?",
+                options: [
+                    { text: "Fracassar ou perder o controle", value: "lider" },
+                    { text: "Ser comum ou não ter originalidade", value: "criativo" },
+                    { text: "Não conseguir ajudar quem precisa", value: "cuidador" },
+                    { text: "Ficar preso em uma rotina monótona", value: "explorador" }
+                ]
+            },
+            {
+                question: "Como você toma decisões importantes?",
+                options: [
+                    { text: "Analiso dados e confio na minha experiência", value: "lider" },
+                    { text: "Sigo minha intuição e criatividade", value: "criativo" },
+                    { text: "Considero o impacto nas pessoas ao meu redor", value: "cuidador" },
+                    { text: "Escolho a opção mais emocionante", value: "explorador" }
+                ]
+            },
+            {
+                question: "Qual seu tipo de filme favorito?",
+                options: [
+                    { text: "Dramas corporativos e biografias de sucesso", value: "lider" },
+                    { text: "Filmes de arte, ficção científica criativa", value: "criativo" },
+                    { text: "Romances e dramas familiares tocantes", value: "cuidador" },
+                    { text: "Aventura, ação e documentários de viagem", value: "explorador" }
+                ]
+            },
+            {
+                question: "Como você vê o futuro?",
+                options: [
+                    { text: "Uma oportunidade de alcançar meus objetivos", value: "lider" },
+                    { text: "Um canvas em branco para criar algo incrível", value: "criativo" },
+                    { text: "Uma chance de ajudar mais pessoas", value: "cuidador" },
+                    { text: "Uma aventura cheia de possibilidades", value: "explorador" }
+                ]
+            },
+            {
+                question: "Qual superpoder você escolheria?",
+                options: [
+                    { text: "Poder de influenciar e liderar qualquer pessoa", value: "lider" },
+                    { text: "Capacidade de materializar qualquer criação", value: "criativo" },
+                    { text: "Poder de curar e confortar instantaneamente", value: "cuidador" },
+                    { text: "Teletransporte para qualquer lugar do universo", value: "explorador" }
+                ]
+            }
+        ];
+
+        const characters = {
+            lider: {
+                name: "O LÍDER",
+                icon: "👑",
+                description: "Você é um líder nato! Possui características de liderança natural, ambição e determinação. Você se destaca em posições de comando e tem a capacidade de inspirar outros a seguir sua visão. Seu foco no sucesso e sua habilidade de tomar decisões difíceis fazem de você uma pessoa influente e respeitada.",
+                traits: ["Determinado", "Ambicioso", "Confiante", "Estratégico", "Influente"]
+            },
+            criativo: {
+                name: "O CRIATIVO",
+                icon: "🎨",
+                description: "Você é uma alma criativa! Sua imaginação não tem limites e você vê o mundo de forma única e original. Você tem o dom de transformar ideias em realidade e inspirar outros através da sua arte e criatividade. Sua originalidade e visão inovadora fazem de você uma pessoa especial e inspiradora.",
+                traits: ["Imaginativo", "Original", "Inspirador", "Intuitivo", "Inovador"]
+            },
+            cuidador: {
+                name: "O CUIDADOR",
+                icon: "💝",
+                description: "Você é um cuidador por natureza! Sua empatia e compaixão são seus maiores dons. Você se realiza ajudando outros e fazendo a diferença na vida das pessoas. Sua capacidade de compreender e apoiar os outros faz de você uma pessoa querida e essencial na vida de muitos.",
+                traits: ["Empático", "Compassivo", "Confiável", "Generoso", "Protetor"]
+            },
+            explorador: {
+                name: "O EXPLORADOR",
+                icon: "🌍",
+                description: "Você é um explorador aventureiro! Sua sede de aventura e curiosidade sobre o mundo são insaciáveis. Você não tem medo de correr riscos e está sempre em busca de novas experiências. Sua coragem e espontaneidade fazem de você uma pessoa emocionante e cheia de histórias para contar.",
+                traits: ["Corajoso", "Aventureiro", "Curioso", "Espontâneo", "Livre"]
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = { lider: 0, criativo: 0, cuidador: 0, explorador: 0 };
+        let userData = {};
+
+        function showForm() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('form-screen').classList.remove('hidden');
+        }
+
+        document.getElementById('user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                age: document.getElementById('age').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value,
+                profession: document.getElementById('profession').value,
+                source: document.getElementById('source').value
+            };
+
+            document.getElementById('form-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        });
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.question;
+            document.getElementById('question-counter').textContent = `${currentQuestion + 1}/10`;
+            
+            const progress = ((currentQuestion + 1) / 10) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'bg-white/10 hover:bg-white/20 border border-white/30 hover:border-white/50 p-4 rounded-xl text-left text-white transition-all duration-300 hover:scale-102';
+                button.textContent = option.text;
+                button.onclick = () => selectAnswer(option.value);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(value) {
+            answers[value]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                setTimeout(showQuestion, 300);
+            } else {
+                setTimeout(showResult, 500);
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const maxScore = Math.max(...Object.values(answers));
+            const result = Object.keys(answers).find(key => answers[key] === maxScore);
+            const character = characters[result];
+
+            document.getElementById('character-icon').textContent = character.icon;
+            document.getElementById('character-name').textContent = character.name;
+            document.getElementById('character-description').textContent = character.description;
+            document.getElementById('user-name-display').textContent = userData.name;
+            document.getElementById('user-email-display').textContent = userData.email;
+
+            const traitsContainer = document.getElementById('character-traits');
+            traitsContainer.innerHTML = '';
+            character.traits.forEach(trait => {
+                const span = document.createElement('span');
+                span.className = 'bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-full font-medium';
+                span.textContent = trait;
+                traitsContainer.appendChild(span);
+            });
+
+            // Simular envio dos dados para um servidor/email
+            console.log('Dados coletados:', {
+                user: userData,
+                result: {
+                    archetype: character.name,
+                    scores: answers,
+                    timestamp: new Date().toISOString()
+                }
+            });
+        }
+
+        function downloadResult() {
+            const characterName = document.getElementById('character-name').textContent;
+            const description = document.getElementById('character-description').textContent;
+            
+            const content = `
+RELATÓRIO DE PERSONALIDADE - ${characterName}
+
+Nome: ${userData.name}
+Email: ${userData.email}
+Data: ${new Date().toLocaleDateString('pt-BR')}
+
+SEU ARQUÉTIPO: ${characterName}
+
+DESCRIÇÃO:
+${description}
+
+CARACTERÍSTICAS PRINCIPAIS:
+${characters[Object.keys(answers).find(key => answers[key] === Math.max(...Object.values(answers)))].traits.join(', ')}
+
+Este relatório foi gerado através de análise comportamental baseada em suas respostas.
+            `;
+            
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `relatorio-personalidade-${userData.name.replace(/\s+/g, '-').toLowerCase()}.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function shareResult() {
+            const characterName = document.getElementById('character-name').textContent;
+            const text = `Acabei de descobrir que sou ${characterName} no Quiz de Personalidade! 🌟 Descubra qual é o seu arquétipo!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Quiz de Personalidade',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text + ' ' + window.location.href);
+                alert('Resultado copiado para a área de transferência!');
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = { lider: 0, criativo: 0, cuidador: 0, explorador: 0 };
+            userData = {};
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('user-form').reset();
+        }
+    </script

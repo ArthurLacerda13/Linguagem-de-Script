@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Cartão de Crédito</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .magnetic-stripe {
+            background: linear-gradient(90deg, #2d3748 0%, #4a5568 50%, #2d3748 100%);
+            height: 40px;
+            margin: 20px 0;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-label {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .input-group:focus-within .floating-label {
+            transform: translateY(-1.5rem) scale(0.75);
+            color: #667eea;
+        }
+        
+        .input-group input:not(:placeholder-shown) + .floating-label {
+            transform: translateY(-1.5rem) scale(0.75);
+            color: #667eea;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">Informações do Cartão</h1>
+            <p class="text-gray-600">Preencha os dados do seu cartão de crédito de forma segura</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 items-start">
+            <!-- Card Preview -->
+            <div class="order-2 lg:order-1">
+                <div class="card-flip" id="cardFlip">
+                    <div class="card-inner h-56">
+                        <!-- Front of Card -->
+                        <div class="card-front gradient-bg p-6 text-white shadow-2xl">
+                            <div class="flex justify-between items-start mb-8">
+                                <div class="w-12 h-8 bg-yellow-400 rounded"></div>
+                                <div id="cardType" class="text-xl font-bold">VISA</div>
+                            </div>
+                            
+                            <div class="mb-6">
+                                <div id="cardNumber" class="text-xl font-mono tracking-wider">
+                                    •••• •••• •••• ••••
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <div class="text-xs text-gray-300 mb-1">TITULAR</div>
+                                    <div id="cardHolder" class="font-semibold">SEU NOME AQUI</div>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-300 mb-1">VÁLIDO ATÉ</div>
+                                    <div id="cardExpiry" class="font-semibold">••/••</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Back of Card -->
+                        <div class="card-back gradient-bg p-6 text-white shadow-2xl">
+                            <div class="magnetic-stripe"></div>
+                            
+                            <div class="bg-white h-10 mb-4 flex justify-end items-center pr-4">
+                                <span id="cardCvv" class="text-black font-mono">•••</span>
+                            </div>
+                            
+                            <div class="text-xs text-gray-300">
+                                <p>Este cartão é propriedade do banco emissor e deve ser devolvido quando solicitado.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="order-1 lg:order-2">
+                <form id="creditCardForm" class="bg-white rounded-2xl shadow-xl p-8">
+                    <!-- Card Number -->
+                    <div class="input-group relative mb-6">
+                        <input 
+                            type="text" 
+                            id="number" 
+                            class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none input-focus transition-all duration-300" 
+                            placeholder=" "
+                            maxlength="19"
+                        >
+                        <label class="floating-label absolute left-4 top-4 text-gray-500 pointer-events-none">
+                            Número do Cartão
+                        </label>
+                        <div class="absolute right-4 top-4" id="cardIcon"></div>
+                    </div>
+
+                    <!-- Card Holder -->
+                    <div class="input-group relative mb-6">
+                        <input 
+                            type="text" 
+                            id="holder" 
+                            class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none input-focus transition-all duration-300" 
+                            placeholder=" "
+                        >
+                        <label class="floating-label absolute left-4 top-4 text-gray-500 pointer-events-none">
+                            Nome do Titular
+                        </label>
+                    </div>
+
+                    <!-- Expiry and CVV -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="input-group relative">
+                            <input 
+                                type="text" 
+                                id="expiry" 
+                                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none input-focus transition-all duration-300" 
+                                placeholder=" "
+                                maxlength="5"
+                            >
+                            <label class="floating-label absolute left-4 top-4 text-gray-500 pointer-events-none">
+                                MM/AA
+                            </label>
+                        </div>
+                        
+                        <div class="input-group relative">
+                            <input 
+                                type="text" 
+                                id="cvv" 
+                                class="w-full px-4 py-4 text-lg border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none input-focus transition-all duration-300" 
+                                placeholder=" "
+                                maxlength="4"
+                            >
+                            <label class="floating-label absolute left-4 top-4 text-gray-500 pointer-events-none">
+                                CVV
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-lg text-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                        Confirmar Pagamento
+                    </button>
+
+                    <!-- Security Notice -->
+                    <div class="mt-6 flex items-center justify-center text-sm text-gray-500">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                        </svg>
+                        Suas informações estão protegidas com criptografia SSL
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Card type detection
+        function getCardType(number) {
+            const patterns = {
+                visa: /^4/,
+                mastercard: /^5[1-5]|^2[2-7]/,
+                amex: /^3[47]/,
+                discover: /^6(?:011|5)/
+            };
+            
+            for (let type in patterns) {
+                if (patterns[type].test(number)) {
+                    return type.toUpperCase();
+                }
+            }
+            return 'CARD';
+        }
+
+        // Format card number
+        function formatCardNumber(value) {
+            return value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        // Format expiry date
+        function formatExpiry(value) {
+            return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2');
+        }
+
+        // Form elements
+        const numberInput = document.getElementById('number');
+        const holderInput = document.getElementById('holder');
+        const expiryInput = document.getElementById('expiry');
+        const cvvInput = document.getElementById('cvv');
+        const form = document.getElementById('creditCardForm');
+        const cardFlip = document.getElementById('cardFlip');
+
+        // Card preview elements
+        const cardNumber = document.getElementById('cardNumber');
+        const cardHolder = document.getElementById('cardHolder');
+        const cardExpiry = document.getElementById('cardExpiry');
+        const cardCvv = document.getElementById('cardCvv');
+        const cardType = document.getElementById('cardType');
+
+        // Event listeners
+        numberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = formatCardNumber(value);
+            e.target.value = formattedValue;
+            
+            // Update card preview
+            if (value) {
+                cardNumber.textContent = formattedValue.padEnd(19, '•').replace(/(.{4})/g, '$1 ').trim();
+                cardType.textContent = getCardType(value);
+            } else {
+                cardNumber.textContent = '•••• •••• •••• ••••';
+                cardType.textContent = 'CARD';
+            }
+        });
+
+        holderInput.addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase();
+            cardHolder.textContent = value || 'SEU NOME AQUI';
+        });
+
+        expiryInput.addEventListener('input', function(e) {
+            let value = formatExpiry(e.target.value);
+            e.target.value = value;
+            cardExpiry.textContent = value || '••/••';
+        });
+
+        cvvInput.addEventListener('focus', function() {
+            cardFlip.classList.add('flipped');
+        });
+
+        cvvInput.addEventListener('blur', function() {
+            cardFlip.classList.remove('flipped');
+        });
+
+        cvvInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            cardCvv.textContent = value.padEnd(3, '•');
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            const data = {
+                number: numberInput.value.replace(/\s/g, ''),
+                holder: holderInput.value,
+                expiry: expiryInput.value,
+                cvv: cvvInput.value
+            };
+
+            if (!data.number || data.number.length < 13) {
+                alert('Por favor, insira um número de cartão válido.');
+                return;
+            }
+
+            if (!data.holder.trim()) {
+                alert('Por favor, insira o nome do titular.');
+                return;
+            }
+
+            if (!data.expiry || data.expiry.length < 5) {
+                alert('Por favor, insira uma data de validade válida.');
+                return;
+            }
+
+            if (!data.cvv || data.cvv.length < 3) {
+                alert('Por favor, insira um CVV válido.');
+                return;
+            }
+
+            // Success message
+            alert('Dados do cartão validados com sucesso!\n\n' + 
+                  'Número: ' + data.number.replace(/(\d{4})/g, '$1 ').trim() + '\n' +
+                  'Titular: ' + data.holder + '\n' +
+                  'Validade: ' + data.expiry + '\n' +
+                  'CVV: ' + data.cvv);
+        });
+
+        // Restrict CVV input to numbers only
+        cvvInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Restrict card number to numbers and spaces only
+        numberInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Restrict expiry to numbers only
+        expiryInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Pagamento Interdimensional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(120, 255, 214, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 120, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 198, 255, 0.1) 0%, transparent 50%);
+        }
+        
+        .rick-font {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .card-flip {
+            perspective: 1000px;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .card-flip.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+        }
+        
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .portal-bg {
+            background: linear-gradient(135deg, #1a365d 0%, #2d5a87 25%, #0f766e 50%, #059669 75%, #00ff88 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .portal-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle, transparent 20%, rgba(0, 255, 136, 0.1) 21%, rgba(0, 255, 136, 0.1) 34%, transparent 35%, transparent),
+                linear-gradient(0deg, rgba(255, 120, 198, 0.1) 50%, transparent 50%);
+            animation: portalSpin 20s linear infinite;
+        }
+        
+        @keyframes portalSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .magnetic-stripe {
+            background: linear-gradient(90deg, #ff6b9d 0%, #00ff88 50%, #ff6b9d 100%);
+            height: 40px;
+            margin: 20px 0;
+            animation: stripePulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes stripePulse {
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        
+        .input-focus:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+        
+        .floating-label {
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .input-group:focus-within .floating-label {
+            transform: translateY(-1.5rem) scale(0.75);
+            color: #00ff88;
+        }
+        
+        .input-group input:not(:placeholder-shown) + .floating-label {
+            transform: translateY(-1.5rem) scale(0.75);
+            color: #00ff88;
+        }
+        
+        .glitch {
+            animation: glitch 0.3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+        
+        .neon-glow {
+            box-shadow: 
+                0 0 5px #00ff88,
+                0 0 10px #00ff88,
+                0 0 15px #00ff88,
+                0 0 20px #00ff88;
+        }
+        
+        .morty-input {
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid #334155;
+            color: #f1f5f9;
+        }
+        
+        .morty-input:focus {
+            background: rgba(15, 23, 42, 0.95);
+            border-color: #00ff88;
+        }
+        
+        .rick-button {
+            background: linear-gradient(45deg, #00ff88, #20d9a7, #00ff88);
+            background-size: 200% 200%;
+            animation: gradientShift 3s ease infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .rick-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .rick-button:hover::before {
+            left: 100%;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .portal-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #00ff88;
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 min-h-screen py-8 px-4 relative">
+    <!-- Portal Particles Background -->
+    <div class="portal-particles fixed inset-0 z-0">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 0.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+    </div>
+
+    <div class="max-w-4xl mx-auto relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 via-blue-500 to-purple-600 mb-4 rick-font glitch">
+                VOCÊ ESTÁ À UM PASSO DE DESCOBRIR QUAL PERSONAGEM VOCÊ SERIA!
+            </h1>
+            <h2 class="text-3xl font-bold text-green-400 mb-2 rick-font">
+                INTERDIMENSIONAL
+            </h2>
+            <p class="text-cyan-300 text-lg">Wubba Lubba Dub Dub! Preencha os dados para descobrir seu personagem! 🛸</p>
+            <div class="mt-4 text-yellow-400 animate-pulse">
+                ⚡ Powered by Rick's Quantum Credit Card Technology ⚡
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8 items-start">
+            <!-- Card Preview -->
+            <div class="order-2 lg:order-1">
+                <div class="mb-4 text-center">
+                    <span class="text-pink-400 text-sm font-semibold">👨‍🔬 CARTÃO MULTIDIMENSIONAL 👨‍🔬</span>
+                </div>
+                <div class="card-flip" id="cardFlip">
+                    <div class="card-inner h-56">
+                        <!-- Front of Card -->
+                        <div class="card-front portal-bg p-6 text-white shadow-2xl relative">
+                            <div class="relative z-10">
+                                <div class="flex justify-between items-start mb-8">
+                                    <div class="w-12 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded flex items-center justify-center text-black font-bold text-xs">
+                                        🛸
+                                    </div>
+                                    <div id="cardType" class="text-xl font-bold rick-font text-green-400">
+                                        PORTAL
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-6">
+                                    <div id="cardNumber" class="text-xl font-mono tracking-wider text-cyan-300">
+                                        •••• •••• •••• ••••
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between items-end">
+                                    <div>
+                                        <div class="text-xs text-green-300 mb-1 rick-font">CIENTISTA LOUCO</div>
+                                        <div id="cardHolder" class="font-semibold text-yellow-300">RICK SANCHEZ</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xs text-green-300 mb-1 rick-font">VÁLIDO EM</div>
+                                        <div id="cardExpiry" class="font-semibold text-yellow-300">••/••</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Back of Card -->
+                        <div class="card-back portal-bg p-6 text-white shadow-2xl relative">
+                            <div class="relative z-10">
+                                <div class="magnetic-stripe"></div>
+                                
+                                <div class="bg-gray-900 h-10 mb-4 flex justify-end items-center pr-4 border border-green-400">
+                                    <span id="cardCvv" class="text-green-400 font-mono rick-font">•••</span>
+                                </div>
+                                
+                                <div class="text-xs text-cyan-300 rick-font">
+                                    <p>🧪 Este cartão funciona em qualquer dimensão!</p>
+                                    <p>⚠️ Não usar próximo a Cronenbergs!</p>
+                                </div>
+                                
+                                <div class="mt-4 text-center">
+                                    <span class="text-pink-400 text-xs">👽 SMITH FAMILY APPROVED 👽</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="order-1 lg:order-2">
+                <div class="bg-slate-800 rounded-2xl shadow-2xl p-8 border-2 border-slate-700 relative overflow-hidden">
+                    <!-- Morty's Corner -->
+                    <div class="absolute top-4 right-4 text-yellow-400 text-xs animate-bounce">
+                        <span>Oh jeez Rick! 😰</span>
+                    </div>
+                    
+                    <form id="creditCardForm">
+                        <div class="mb-6 text-center">
+                            <h3 class="text-2xl font-bold text-green-400 rick-font mb-2">
+                                COLOQUE OS DADOS SOLICITADOS
+                            </h3>
+                            <p class="text-cyan-300 text-sm">Morty, digite os números certos ou explodimos! 💥</p>
+                        </div>
+
+                        <!-- Card Number -->
+                        <div class="input-group relative mb-6">
+                            <input 
+                                type="text" 
+                                id="number" 
+                                class="w-full px-4 py-4 text-lg morty-input rounded-lg focus:outline-none input-focus transition-all duration-300 rick-font" 
+                                placeholder=" "
+                                maxlength="19"
+                            >
+                            <label class="floating-label absolute left-4 top-4 text-slate-400 pointer-events-none">
+                                🔢 Número do Cartão
+                            </label>
+                            <div class="absolute right-4 top-4" id="cardIcon">🛸</div>
+                        </div>
+
+                        <!-- Card Holder -->
+                        <div class="input-group relative mb-6">
+                            <input 
+                                type="text" 
+                                id="holder" 
+                                class="w-full px-4 py-4 text-lg morty-input rounded-lg focus:outline-none input-focus transition-all duration-300" 
+                                placeholder=" "
+                            >
+                            <label class="floating-label absolute left-4 top-4 text-slate-400 pointer-events-none">
+                                👨‍🔬 Nome do Cientista Responsável
+                            </label>
+                        </div>
+
+                        <!-- Expiry and CVV -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="input-group relative">
+                                <input 
+                                    type="text" 
+                                    id="expiry" 
+                                    class="w-full px-4 py-4 text-lg morty-input rounded-lg focus:outline-none input-focus transition-all duration-300 rick-font" 
+                                    placeholder=" "
+                                    maxlength="5"
+                                >
+                                <label class="floating-label absolute left-4 top-4 text-slate-400 pointer-events-none">
+                                    📅 Vencimento
+                                </label>
+                            </div>
+                            
+                            <div class="input-group relative">
+                                <input 
+                                    type="text" 
+                                    id="cvv" 
+                                    class="w-full px-4 py-4 text-lg morty-input rounded-lg focus:outline-none input-focus transition-all duration-300 rick-font" 
+                                    placeholder=" "
+                                    maxlength="4"
+                                >
+                                <label class="floating-label absolute left-4 top-4 text-slate-400 pointer-events-none">
+                                    🔐 CVV
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button 
+                            type="submit" 
+                            class="w-full rick-button text-slate-900 py-4 px-6 rounded-lg text-lg font-bold hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl rick-font neon-glow"
+                        >
+                            🚀 MEU PERSONAGEM! 🚀
+                        </button>
+
+                        <!-- Rick's Quote -->
+                        <div class="mt-6 text-center">
+                            <p class="text-green-400 text-sm italic animate-pulse">
+                                "Morty, this is quantum-encrypted, *burp* totally secure!"
+                            </p>
+                        </div>
+
+                        <!-- Security Notice -->
+                        <div class="mt-4 flex items-center justify-center text-sm text-cyan-300">
+                            <svg class="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
+                            </svg>
+                            Protegido por Tecnologia Interdimensional de Rick
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Quote -->
+        <div class="mt-8 text-center">
+            <p class="text-pink-400 text-lg italic rick-font">
+                "Stay cool with the results of the character survey!" 🎵
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Rick and Morty themed card types
+        function getCardType(number) {
+            const patterns = {
+                visa: /^4/,
+                mastercard: /^5[1-5]|^2[2-7]/,
+                amex: /^3[47]/,
+                discover: /^6(?:011|5)/
+            };
+            
+            const rickTypes = {
+                visa: 'PORTAL-V',
+                mastercard: 'RICK-MC',
+                amex: 'SCHWIFTY',
+                discover: 'MORTY-D'
+            };
+            
+            for (let type in patterns) {
+                if (patterns[type].test(number)) {
+                    return rickTypes[type];
+                }
+            }
+            return 'QUANTUM';
+        }
+
+        // Glitch effect for Rick
+        function addGlitchEffect() {
+            const cardType = document.getElementById('cardType');
+            cardType.classList.add('glitch');
+            setTimeout(() => {
+                cardType.classList.remove('glitch');
+            }, 300);
+        }
+
+        // Format card number
+        function formatCardNumber(value) {
+            return value.replace(/\s/g, '').replace(/(.{4})/g, '$1 ').trim();
+        }
+
+        // Format expiry date
+        function formatExpiry(value) {
+            return value.replace(/\D/g, '').replace(/(\d{2})(\d)/, '$1/$2');
+        }
+
+        // Rick's random quotes
+        const rickQuotes = [
+            "Wubba Lubba Dub Dub! 🍺",
+            "I'm Pickle Rick! 🥒",
+            "Get Schwifty! 🎵",
+            "Tiny Rick! 🎸",
+            "Existence is pain! 😱",
+            "Science, Morty! 🧪"
+        ];
+
+        // Form elements
+        const numberInput = document.getElementById('number');
+        const holderInput = document.getElementById('holder');
+        const expiryInput = document.getElementById('expiry');
+        const cvvInput = document.getElementById('cvv');
+        const form = document.getElementById('creditCardForm');
+        const cardFlip = document.getElementById('cardFlip');
+
+        // Card preview elements
+        const cardNumber = document.getElementById('cardNumber');
+        const cardHolder = document.getElementById('cardHolder');
+        const cardExpiry = document.getElementById('cardExpiry');
+        const cardCvv = document.getElementById('cardCvv');
+        const cardType = document.getElementById('cardType');
+
+        // Event listeners
+        numberInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = formatCardNumber(value);
+            e.target.value = formattedValue;
+            
+            // Update card preview
+            if (value) {
+                cardNumber.textContent = formattedValue.padEnd(19, '•').replace(/(.{4})/g, '$1 ').trim();
+                cardType.textContent = getCardType(value);
+                addGlitchEffect();
+            } else {
+                cardNumber.textContent = '•••• •••• •••• ••••';
+                cardType.textContent = 'PORTAL';
+            }
+        });
+
+        holderInput.addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase();
+            cardHolder.textContent = value || 'RICK SANCHEZ';
+        });
+
+        expiryInput.addEventListener('input', function(e) {
+            let value = formatExpiry(e.target.value);
+            e.target.value = value;
+            cardExpiry.textContent = value || '••/••';
+        });
+
+        cvvInput.addEventListener('focus', function() {
+            cardFlip.classList.add('flipped');
+        });
+
+        cvvInput.addEventListener('blur', function() {
+            cardFlip.classList.remove('flipped');
+        });
+
+        cvvInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+            cardCvv.textContent = value.padEnd(3, '•');
+        });
+
+        // Form submission with Rick and Morty style
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            const data = {
+                number: numberInput.value.replace(/\s/g, ''),
+                holder: holderInput.value,
+                expiry: expiryInput.value,
+                cvv: cvvInput.value
+            };
+
+            if (!data.number || data.number.length < 13) {
+                alert('🛸 Oh jeez Rick! O código do portal está errado!');
+                return;
+            }
+
+            if (!data.holder.trim()) {
+                alert('👨‍🔬 Morty! Você esqueceu de colocar o nome do cientista!');
+                return;
+            }
+
+            if (!data.expiry || data.expiry.length < 5) {
+                alert('⏰ Rick diz: "A data temporal está incorreta, Morty!"');
+                return;
+            }
+
+            if (!data.cvv || data.cvv.length < 3) {
+                alert('🔐 Morty! O código secreto está faltando!');
+                return;
+            }
+
+            // Success message with Rick and Morty style
+            const randomQuote = rickQuotes[Math.floor(Math.random() * rickQuotes.length)];
+            alert('HELLO WORD! VOCÊ É UM BUNDA CAGADA QUE FOI CLONADO');
+        });
+
+        // Restrict inputs
+        cvvInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        numberInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        expiryInput.addEventListener('keypress', function(e) {
+            if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'Enter'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Random Rick quotes every 10 seconds
+        setInterval(() => {
+            const quotes = document.querySelectorAll('p[class*="animate-pulse"]');
+            if (quotes.length > 0) {
+                const randomQuote = rickQuotes[Math.floor(Math.random() * rickQuotes.length)];
+                quotes[0].textContent = `"${randomQuote}"`;
+            }
+        }, 10000);
+    </script>
+</body>
+</html>

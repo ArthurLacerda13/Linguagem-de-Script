@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Rick and Morty - Descubra seu Personagem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .portal-bg {
+            background: radial-gradient(circle at center, #00ff88 0%, #00cc6a 30%, #0099ff 70%, #6600cc 100%);
+            animation: portalPulse 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes portalPulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            100% { transform: scale(1.05) rotate(5deg); opacity: 1; }
+        }
+        
+        .neon-text {
+            color: #00ff88;
+            text-shadow: 0 0 5px #00ff88, 0 0 10px #00ff88, 0 0 15px #00ff88;
+        }
+        
+        .sci-fi-button {
+            background: linear-gradient(45deg, #00ff88, #0099ff);
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .sci-fi-button:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+            transform: translateY(-2px);
+        }
+        
+        .question-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .option-button {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #0099ff;
+            transition: all 0.3s ease;
+        }
+        
+        .option-button:hover {
+            background: rgba(0, 153, 255, 0.2);
+            border-color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+        
+        .result-card {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(102, 0, 204, 0.3));
+            border: 2px solid #00ff88;
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.5);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-black text-white overflow-x-hidden">
+    <!-- Background animado -->
+    <div class="fixed inset-0 portal-bg opacity-20"></div>
+    <div class="fixed inset-0 bg-gradient-to-br from-purple-900/30 via-black to-green-900/30"></div>
+    
+    <!-- Partículas flutuantes -->
+    <div class="fixed inset-0 pointer-events-none">
+        <div class="absolute top-20 left-10 w-2 h-2 bg-green-400 rounded-full opacity-70 floating"></div>
+        <div class="absolute top-40 right-20 w-3 h-3 bg-blue-400 rounded-full opacity-50 floating" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-40 left-1/4 w-2 h-2 bg-purple-400 rounded-full opacity-60 floating" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-20 right-1/3 w-4 h-4 bg-green-300 rounded-full opacity-40 floating" style="animation-delay: 0.5s;"></div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-8">
+        <!-- Tela Inicial -->
+        <div id="start-screen" class="min-h-screen flex flex-col items-center justify-center text-center">
+            <div class="mb-8 floating">
+                <h1 class="text-6xl md:text-8xl font-black neon-text mb-4">
+                    RICK & MORTY
+                </h1>
+                <h2 class="text-2xl md:text-4xl font-bold text-cyan-300 mb-8">
+                    QUIZ DIMENSIONAL
+                </h2>
+            </div>
+            
+            <div class="question-card rounded-2xl p-8 max-w-2xl mb-8">
+                <p class="text-xl md:text-2xl mb-6 text-gray-300 leading-relaxed">
+                    Prepare-se para uma jornada através das dimensões! 🌌
+                </p>
+                <p class="text-lg mb-8 text-gray-400">
+                    Responda às perguntas e descubra qual personagem do universo Rick and Morty representa sua personalidade interdimensional!
+                </p>
+                <button onclick="startQuiz()" class="sci-fi-button text-black font-bold py-4 px-8 rounded-xl text-xl hover:scale-105 transform transition-all duration-300">
+                    INICIAR EXPERIMENTO
+                </button>
+            </div>
+        </div>
+
+        <!-- Tela do Quiz -->
+        <div id="quiz-screen" class="hidden min-h-screen flex flex-col justify-center">
+            <div class="max-w-4xl mx-auto">
+                <!-- Barra de Progresso -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-cyan-300 font-bold">QUESTÃO</span>
+                        <span id="question-counter" class="text-green-400 font-bold">1/8</span>
+                    </div>
+                    <div class="w-full bg-gray-800 rounded-full h-3 border border-cyan-500">
+                        <div id="progress-bar" class="bg-gradient-to-r from-green-400 to-cyan-400 h-3 rounded-full transition-all duration-500 ease-out" style="width: 12.5%"></div>
+                    </div>
+                </div>
+
+                <!-- Card da Pergunta -->
+                <div class="question-card rounded-2xl p-8 mb-8">
+                    <h3 id="question-text" class="text-2xl md:text-3xl font-bold mb-8 neon-text text-center"></h3>
+                    <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- As opções serão inseridas aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Resultado -->
+        <div id="result-screen" class="hidden min-h-screen flex flex-col items-center justify-center">
+            <div class="result-card rounded-3xl p-12 max-w-4xl text-center">
+                <h2 class="text-4xl md:text-6xl font-black neon-text mb-6">
+                    SEU RESULTADO
+                </h2>
+                
+                <div class="mb-8">
+                    <div id="character-emoji" class="text-8xl mb-4"></div>
+                    <h3 id="character-name" class="text-3xl md:text-5xl font-bold text-cyan-300 mb-4"></h3>
+                    <p id="character-description" class="text-xl text-gray-300 leading-relaxed mb-6"></p>
+                    <div id="character-traits" class="flex flex-wrap justify-center gap-3 mb-8"></div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button onclick="restartQuiz()" class="sci-fi-button text-black font-bold py-3 px-6 rounded-xl hover:scale-105 transform transition-all duration-300">
+                        FAZER NOVAMENTE
+                    </button>
+                    <button onclick="shareResult()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-xl border border-purple-400 hover:scale-105 transform transition-all duration-300">
+                        COMPARTILHAR
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Como você encara a ciência?",
+                options: [
+                    { text: "A ciência é tudo! Sem limites éticos!", value: "rick" },
+                    { text: "É interessante, mas meio assustadora...", value: "morty" },
+                    { text: "Uso para meus próprios objetivos", value: "beth" },
+                    { text: "Prefiro coisas mais práticas", value: "jerry" }
+                ]
+            },
+            {
+                question: "Sua maior motivação na vida é:",
+                options: [
+                    { text: "Conhecimento e poder absoluto", value: "rick" },
+                    { text: "Proteger quem eu amo", value: "morty" },
+                    { text: "Provar meu valor", value: "beth" },
+                    { text: "Ser aceito e respeitado", value: "jerry" }
+                ]
+            },
+            {
+                question: "Como você lida com problemas?",
+                options: [
+                    { text: "Resolvo com genialidade e álcool", value: "rick" },
+                    { text: "Fico nervoso mas tento ajudar", value: "morty" },
+                    { text: "Analiso friamente as opções", value: "beth" },
+                    { text: "Procuro a solução mais fácil", value: "jerry" }
+                ]
+            },
+            {
+                question: "Seu relacionamento com autoridade:",
+                options: [
+                    { text: "Autoridade? Eu SOU a autoridade!", value: "rick" },
+                    { text: "Respeito, mas questiono quando necessário", value: "morty" },
+                    { text: "Depende se convém aos meus interesses", value: "beth" },
+                    { text: "Sigo as regras para evitar problemas", value: "jerry" }
+                ]
+            },
+            {
+                question: "Em uma festa, você seria:",
+                options: [
+                    { text: "O mais inteligente (e bêbado) da festa", value: "rick" },
+                    { text: "O que fica meio desconfortável no canto", value: "morty" },
+                    { text: "Sociável mas sempre observando", value: "beth" },
+                    { text: "Tentando impressionar todo mundo", value: "jerry" }
+                ]
+            },
+            {
+                question: "Sua filosofia de vida:",
+                options: [
+                    { text: "Nada importa, então faça o que quiser", value: "rick" },
+                    { text: "Tente fazer a coisa certa", value: "morty" },
+                    { text: "Seja forte e independente", value: "beth" },
+                    { text: "A vida deve ser confortável e segura", value: "jerry" }
+                ]
+            },
+            {
+                question: "Como você vê o futuro?",
+                options: [
+                    { text: "Infinitas possibilidades para explorar", value: "rick" },
+                    { text: "Esperançoso mas preocupante", value: "morty" },
+                    { text: "Algo que posso controlar", value: "beth" },
+                    { text: "Espero que seja melhor que o presente", value: "jerry" }
+                ]
+            },
+            {
+                question: "Seu maior medo:",
+                options: [
+                    { text: "Não temo nada... exceto talvez a sobriedade", value: "rick" },
+                    { text: "Decepcionar as pessoas que amo", value: "morty" },
+                    { text: "Não conseguir realizar meu potencial", value: "beth" },
+                    { text: "Ser abandonado ou rejeitado", value: "jerry" }
+                ]
+            }
+        ];
+
+        const characters = {
+            rick: {
+                name: "RICK SANCHEZ",
+                emoji: "🧪",
+                description: "Você é um gênio científico com tendências autodestrutivas! Extremamente inteligente, cínico e com problemas com álcool, você vê o universo como seu playground pessoal. Sua genialidade é incomparável, mas sua arrogância e nihilismo podem ser problemáticos.",
+                traits: ["Genial", "Cínico", "Aventureiro", "Problemático", "Poderoso"]
+            },
+            morty: {
+                name: "MORTY SMITH",
+                emoji: "😰",
+                description: "Você é ansioso mas tem um coração puro! Apesar de ser nervoso e inseguro, possui uma bússola moral forte e genuinamente se importa com os outros. Sua inocência é sua força, mesmo em situações impossíveis.",
+                traits: ["Ansioso", "Leal", "Moral", "Corajoso", "Empático"]
+            },
+            beth: {
+                name: "BETH SMITH",
+                emoji: "👩‍⚕️",
+                description: "Você é inteligente, determinada e complexa! Como cirurgiã de cavalos, você equilibra responsabilidade familiar com ambições pessoais. Sua inteligência herdada do Rick se manifesta de forma mais estável e focada.",
+                traits: ["Inteligente", "Determinada", "Complexa", "Responsável", "Ambiciosa"]
+            },
+            jerry: {
+                name: "JERRY SMITH",
+                emoji: "😅",
+                description: "Você busca aprovação e estabilidade! Embora às vezes seja inseguro e evite confrontos, você valoriza a família e a normalidade. Sua persistência e otimismo podem ser surpreendentemente eficazes.",
+                traits: ["Inseguro", "Otimista", "Familiar", "Persistente", "Comum"]
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = { rick: 0, morty: 0, beth: 0, jerry: 0 };
+
+        function startQuiz() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question-text').textContent = question.question;
+            document.getElementById('question-counter').textContent = `${currentQuestion + 1}/${questions.length}`;
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option-button p-4 rounded-xl text-left hover:scale-102 transform transition-all duration-300 backdrop-blur-sm';
+                button.textContent = option.text;
+                button.onclick = () => selectAnswer(option.value);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectAnswer(value) {
+            answers[value]++;
+            currentQuestion++;
+
+            if (currentQuestion < questions.length) {
+                setTimeout(showQuestion, 300);
+            } else {
+                setTimeout(showResult, 500);
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            const maxScore = Math.max(...Object.values(answers));
+            const result = Object.keys(answers).find(key => answers[key] === maxScore);
+            const character = characters[result];
+
+            document.getElementById('character-emoji').textContent = character.emoji;
+            document.getElementById('character-name').textContent = character.name;
+            document.getElementById('character-description').textContent = character.description;
+
+            const traitsContainer = document.getElementById('character-traits');
+            traitsContainer.innerHTML = '';
+            character.traits.forEach(trait => {
+                const span = document.createElement('span');
+                span.className = 'bg-gradient-to-r from-cyan-500 to-green-500 text-black px-3 py-1 rounded-full font-bold text-sm';
+                span.textContent = trait;
+                traitsContainer.appendChild(span);
+            });
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers = { rick: 0, morty: 0, beth: 0, jerry: 0 };
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function shareResult() {
+            const characterName = document.getElementById('character-name').textContent;
+            const text = `Acabei de descobrir que sou ${characterName} no Quiz Rick and Morty! 🌌 Descubra qual personagem você seria!`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Quiz Rick and Morty',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text + ' ' + window.location.href);
+                alert('Resultado copiado para a área de transferência!');
+            }
+        }
+    </script>
+</body>
+</html>
